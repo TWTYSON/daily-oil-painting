@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>每日油畫 · 公有領域名畫</title>
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --card: #1a1a1a;
+      --text: #e8e8e8;
+      --muted: #999;
+      --accent: #c9a227;
+      --border: #333;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    header {
+      padding: 1.8rem 1rem 1.2rem;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+    h1 {
+      font-size: 1.7rem;
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+    }
+    .subtitle {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    /* 今日推薦區 */
+    .daily-section {
+      max-width: 900px;
+      margin: 1.5rem auto;
+      padding: 0 1rem;
+    }
+    .daily-label {
+      display: inline-block;
+      background: var(--accent);
+      color: #111;
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 0.25rem 0.7rem;
+      border-radius: 20px;
+      margin-bottom: 0.8rem;
+    }
+    .daily-card {
+      background: var(--card);
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 700px) {
+      .daily-card {
+        grid-template-columns: 1.1fr 1fr;
+      }
+    }
+    .daily-card img {
+      width: 100%;
+      height: 320px;
+      object-fit: cover;
+      background: #222;
+    }
+    @media (min-width: 700px) {
+      .daily-card img {
+        height: 100%;
+        min-height: 380px;
+      }
+    }
+    .daily-info {
+      padding: 1.4rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .daily-title {
+      font-size: 1.35rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      line-height: 1.35;
+    }
+    .daily-artist {
+      color: var(--accent);
+      font-size: 1.05rem;
+      margin-bottom: 0.8rem;
+    }
+    .daily-desc {
+      font-size: 0.95rem;
+      color: #ccc;
+      margin-bottom: 1rem;
+      line-height: 1.6;
+    }
+    .daily-meta {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* 搜尋區 */
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      justify-content: center;
+      padding: 1.2rem 1rem 0.5rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    input[type="search"] {
+      flex: 1;
+      min-width: 200px;
+      padding: 0.7rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--card);
+      color: var(--text);
+      font-size: 1rem;
+    }
+    input[type="search"]::placeholder { color: var(--muted); }
+    button {
+      padding: 0.7rem 1.4rem;
+      border: none;
+      border-radius: 8px;
+      background: var(--accent);
+      color: #111;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+    button:hover { opacity: 0.9; }
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .status {
+      text-align: center;
+      padding: 0.6rem;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.25rem;
+      padding: 1rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .card {
+      background: var(--card);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      transition: transform 0.2s;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+    }
+    .card img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      background: #222;
+    }
+    .card-body {
+      padding: 1rem;
+    }
+    .card-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+      line-height: 1.35;
+    }
+    .card-artist {
+      color: var(--accent);
+      font-size: 0.9rem;
+      margin-bottom: 0.4rem;
+    }
+    .card-desc {
+      font-size: 0.85rem;
+      color: #ccc;
+      line-height: 1.5;
+      margin-bottom: 0.5rem;
+    }
+    .card-meta {
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+    .loading, .error {
+      text-align: center;
+      padding: 2.5rem 1rem;
+      color: var(--muted);
+    }
+    .error { color: #e74c3c; }
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--muted);
+      font-size: 0.8rem;
+      border-top: 1px solid var(--border);
+      margin-top: 2rem;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>每日油畫</h1>
+    <p class="subtitle">每天一張公有領域名畫 · 與心愛的人一起欣賞</p>
+  </header>
+
+  <!-- 今日推薦 -->
+  <section class="daily-section" id="dailySection">
+    <div class="loading">正在挑選今日油畫…</div>
+  </section>
+
+  <!-- 搜尋與瀏覽 -->
+  <div class="controls">
+    <input type="search" id="searchInput" placeholder="搜尋其他作品（例如：van gogh、monet、landscape）" value="oil painting">
+    <button id="searchBtn">搜尋</button>
+    <button id="loadMoreBtn" disabled>載入更多</button>
+  </div>
+  <div class="status" id="status"></div>
+  <div class="gallery" id="gallery"></div>
+
+  <footer>
+    資料來源：<a href="https://www.metmuseum.org/openaccess" target="_blank" rel="noopener">The Metropolitan Museum of Art Open Access</a>（CC0）<br>
+    中文介紹由系統根據公開資料自動生成 · 僅供欣賞學習
+  </footer>
+
+  <script>
+    const API_BASE = 'https://collectionapi.metmuseum.org/public/collection/v1';
+    const SEARCH_API = 'https://collectionapi.metmuseum.org/public/collection/v1.1/search';
+
+    let currentObjectIDs = [];
+    let currentIndex = 0;
+    const PAGE_SIZE = 12;
+    let isLoading = false;
+
+    const dailySection = document.getElementById('dailySection');
+    const gallery = document.getElementById('gallery');
+    const status = document.getElementById('status');
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const loadMoreBtn = document.getElementById('loadMoreBtn');
+
+    // 用日期產生固定種子，讓同一天大家都看到同一張
+    function getDailySeed() {
+      const today = new Date();
+      return today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+    }
+
+    // 更好的中文介紹
+    function makeChineseDesc(obj, isDaily = false) {
+      const artist = obj.artistDisplayName || '未知藝術家';
+      const title = obj.title || '這幅作品';
+      const date = obj.objectDate || '';
+      const medium = obj.medium || '油畫';
+      const nationality = obj.artistNationality || '';
+      const dept = obj.department || '相關部門';
+      const bio = obj.artistDisplayBio || '';
+
+      let desc = '';
+
+      if (isDaily) {
+        desc += `今天為你推薦的是《${title}》。`;
+      } else {
+        desc += `《${title}》`;
+      }
+
+      if (artist && artist !== '未知藝術家') {
+        desc += `這幅作品出自${nationality ? nationality + '藝術家' : ''}${artist}`;
+        if (date) desc += `，創作於 ${date}`;
+        desc += '。';
+      }
+
+      if (medium.toLowerCase().includes('oil')) {
+        desc += `使用油畫媒材完成`;
+        if (dept) desc += `，目前收藏於大都會博物館「${dept}」`;
+        desc += '。';
+      } else if (dept) {
+        desc += `目前收藏於大都會博物館「${dept}」。`;
+      }
+
+      // 如果有藝術家簡短生平就加一點
+      if (bio && bio.length < 80) {
+        desc += ` ${bio}。`;
+      }
+
+      return desc;
+    }
+
+    // 載入今日推薦
+    async function loadDailyPainting() {
+      try {
+        const url = `${SEARCH_API}?q=oil%20painting&hasImages=true&isPublicDomain=true&limit=80`;
+        const res = await fetch(url);
+        const data = await res.json();
+        const ids = data.objectIDs || [];
+
+        if (ids.length === 0) {
+          dailySection.innerHTML = '<div class="error">暫時無法載入今日推薦</div>';
+          return;
+        }
+
+        // 用日期種子選出固定的一張
+        const seed = getDailySeed();
+        const index = seed % ids.length;
+        const selectedId = ids[index];
+
+        const objRes = await fetch(`${API_BASE}/objects/${selectedId}`);
+        const obj = await objRes.json();
+
+        if (!obj || !obj.primaryImageSmall) {
+          dailySection.innerHTML = '<div class="error">今日推薦載入失敗，請重新整理</div>';
+          return;
+        }
+
+        const chineseDesc = makeChineseDesc(obj, true);
+
+        dailySection.innerHTML = `
+          <div class="daily-label">今日油畫 · ${new Date().toLocaleDateString('zh-TW')}</div>
+          <div class="daily-card">
+            <img src="${obj.primaryImage || obj.primaryImageSmall}" alt="${obj.title}" 
+                 onerror="this.src='${obj.primaryImageSmall}'">
+            <div class="daily-info">
+              <h2 class="daily-title">${obj.title || '無標題'}</h2>
+              <p class="daily-artist">${obj.artistDisplayName || '未知藝術家'}</p>
+              <p class="daily-desc">${chineseDesc}</p>
+              <p class="daily-meta">
+                ${obj.objectDate || ''} ${obj.objectDate && obj.medium ? '·' : ''} ${obj.medium || ''}<br>
+                館藏：${obj.department || 'The Met'} · 大都會博物館
+              </p>
+            </div>
+          </div>
+        `;
+      } catch (err) {
+        console.error(err);
+        dailySection.innerHTML = '<div class="error">今日推薦載入失敗</div>';
+      }
+    }
+
+    // 搜尋功能
+    async function searchPaintings(query) {
+      status.textContent = '搜尋中…';
+      gallery.innerHTML = '<div class="loading">正在搜尋…</div>';
+      loadMoreBtn.disabled = true;
+      currentIndex = 0;
+      currentObjectIDs = [];
+
+      try {
+        const url = `${SEARCH_API}?q=${encodeURIComponent(query)}&hasImages=true&isPublicDomain=true&limit=100`;
+        const res = await fetch(url);
+        const data = await res.json();
+        currentObjectIDs = data.objectIDs || [];
+
+        if (currentObjectIDs.length === 0) {
+          gallery.innerHTML = '<div class="error">找不到相關作品</div>';
+          status.textContent = '';
+          return;
+        }
+
+        status.textContent = `找到約 ${data.total || currentObjectIDs.length} 件作品`;
+        gallery.innerHTML = '';
+        await loadNextPage();
+      } catch (err) {
+        gallery.innerHTML = `<div class="error">搜尋失敗</div>`;
+        status.textContent = '';
+      }
+    }
+
+    async function loadNextPage() {
+      if (isLoading || currentIndex >= currentObjectIDs.length) return;
+      isLoading = true;
+      loadMoreBtn.disabled = true;
+
+      const batch = currentObjectIDs.slice(currentIndex, currentIndex + PAGE_SIZE);
+      const objects = await Promise.all(
+        batch.map(id => fetch(`${API_BASE}/objects/${id}`).then(r => r.json()).catch(() => null))
+      );
+
+      const valid = objects.filter(obj => {
+        if (!obj || !obj.isPublicDomain || !obj.primaryImageSmall) return false;
+        const m = (obj.medium || '').toLowerCase();
+        return m.includes('oil') || m.includes('canvas') || (obj.objectName || '').toLowerCase().includes('painting');
+      });
+
+      valid.forEach(obj => {
+        const card = document.createElement('article');
+        card.className = 'card';
+        card.innerHTML = `
+          <img src="${obj.primaryImageSmall}" alt="${obj.title}" loading="lazy">
+          <div class="card-body">
+            <h3 class="card-title">${obj.title || '無標題'}</h3>
+            <p class="card-artist">${obj.artistDisplayName || '未知藝術家'}</p>
+            <p class="card-desc">${makeChineseDesc(obj)}</p>
+            <p class="card-meta">${obj.objectDate || ''} · ${obj.medium || ''}</p>
+          </div>
+        `;
+        gallery.appendChild(card);
+      });
+
+      currentIndex += PAGE_SIZE;
+      isLoading = false;
+      loadMoreBtn.disabled = currentIndex >= currentObjectIDs.length;
+      status.textContent = currentIndex < currentObjectIDs.length ? '點擊「載入更多」繼續瀏覽' : '已顯示目前結果';
+    }
+
+    searchBtn.addEventListener('click', () => {
+      searchPaintings(searchInput.value.trim() || 'oil painting');
+    });
+    searchInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') searchBtn.click();
+    });
+    loadMoreBtn.addEventListener('click', loadNextPage);
+
+    // 初始化
+    loadDailyPainting();
+    searchPaintings('oil painting');
+  </script>
+</body>
+</html>
