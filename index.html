@@ -26,20 +26,10 @@
       text-align: center;
       border-bottom: 1px solid var(--border);
     }
-    h1 {
-      font-size: 1.7rem;
-      font-weight: 600;
-      margin-bottom: 0.3rem;
-    }
-    .subtitle {
-      color: var(--muted);
-      font-size: 0.9rem;
-    }
-    .daily-section {
-      max-width: 900px;
-      margin: 1.5rem auto;
-      padding: 0 1rem;
-    }
+    h1 { font-size: 1.7rem; font-weight: 600; margin-bottom: 0.3rem; }
+    .subtitle { color: var(--muted); font-size: 0.9rem; }
+
+    .daily-section { max-width: 900px; margin: 1.5rem auto; padding: 0 1rem; }
     .daily-label {
       display: inline-block;
       background: var(--accent);
@@ -66,6 +56,7 @@
       height: 320px;
       object-fit: cover;
       background: #222;
+      cursor: zoom-in;
     }
     @media (min-width: 700px) {
       .daily-card img { height: 100%; min-height: 380px; }
@@ -76,27 +67,11 @@
       flex-direction: column;
       justify-content: center;
     }
-    .daily-title {
-      font-size: 1.35rem;
-      font-weight: 600;
-      margin-bottom: 0.4rem;
-      line-height: 1.35;
-    }
-    .daily-artist {
-      color: var(--accent);
-      font-size: 1.05rem;
-      margin-bottom: 0.8rem;
-    }
-    .daily-desc {
-      font-size: 0.95rem;
-      color: #ccc;
-      margin-bottom: 1rem;
-      line-height: 1.6;
-    }
-    .daily-meta {
-      font-size: 0.85rem;
-      color: var(--muted);
-    }
+    .daily-title { font-size: 1.35rem; font-weight: 600; margin-bottom: 0.4rem; line-height: 1.35; }
+    .daily-artist { color: var(--accent); font-size: 1.05rem; margin-bottom: 0.8rem; }
+    .daily-desc { font-size: 0.95rem; color: #ccc; margin-bottom: 1rem; line-height: 1.65; }
+    .daily-meta { font-size: 0.85rem; color: var(--muted); }
+
     .controls {
       display: flex;
       flex-wrap: wrap;
@@ -129,12 +104,8 @@
     }
     button:hover { opacity: 0.9; }
     button:disabled { opacity: 0.5; cursor: not-allowed; }
-    .status {
-      text-align: center;
-      padding: 0.6rem;
-      color: var(--muted);
-      font-size: 0.85rem;
-    }
+    .status { text-align: center; padding: 0.6rem; color: var(--muted); font-size: 0.85rem; }
+
     .gallery {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -156,35 +127,17 @@
       height: 220px;
       object-fit: cover;
       background: #222;
+      cursor: zoom-in;
     }
     .card-body { padding: 1rem; }
-    .card-title {
-      font-size: 1rem;
-      font-weight: 600;
-      margin-bottom: 0.3rem;
-      line-height: 1.35;
-    }
-    .card-artist {
-      color: var(--accent);
-      font-size: 0.9rem;
-      margin-bottom: 0.4rem;
-    }
-    .card-desc {
-      font-size: 0.85rem;
-      color: #ccc;
-      line-height: 1.5;
-      margin-bottom: 0.5rem;
-    }
-    .card-meta {
-      color: var(--muted);
-      font-size: 0.78rem;
-    }
-    .loading, .error {
-      text-align: center;
-      padding: 2.5rem 1rem;
-      color: var(--muted);
-    }
+    .card-title { font-size: 1rem; font-weight: 600; margin-bottom: 0.3rem; line-height: 1.35; }
+    .card-artist { color: var(--accent); font-size: 0.9rem; margin-bottom: 0.4rem; }
+    .card-desc { font-size: 0.85rem; color: #ccc; line-height: 1.55; margin-bottom: 0.5rem; }
+    .card-meta { color: var(--muted); font-size: 0.78rem; }
+
+    .loading, .error { text-align: center; padding: 2.5rem 1rem; color: var(--muted); }
     .error { color: #e74c3c; }
+
     footer {
       text-align: center;
       padding: 2rem 1rem;
@@ -194,6 +147,38 @@
       margin-top: 2rem;
     }
     footer a { color: var(--accent); text-decoration: none; }
+
+    /* Lightbox */
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.92);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      cursor: zoom-out;
+    }
+    .lightbox.active { display: flex; }
+    .lightbox img {
+      max-width: 95%;
+      max-height: 90vh;
+      object-fit: contain;
+      border-radius: 4px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    }
+    .lightbox-close {
+      position: absolute;
+      top: 1rem;
+      right: 1.2rem;
+      color: #fff;
+      font-size: 2rem;
+      cursor: pointer;
+      opacity: 0.8;
+      line-height: 1;
+    }
+    .lightbox-close:hover { opacity: 1; }
   </style>
 </head>
 <body>
@@ -216,8 +201,14 @@
 
   <footer>
     資料來源：<a href="https://www.metmuseum.org/openaccess" target="_blank" rel="noopener">The Metropolitan Museum of Art Open Access</a>（CC0）<br>
-    中文介紹由系統根據公開資料自動生成 · 僅供欣賞學習
+    中文介紹由系統根據公開資料自動生成 · 點擊圖片可放大欣賞
   </footer>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox">
+    <span class="lightbox-close" id="lightboxClose">&times;</span>
+    <img id="lightboxImg" src="" alt="放大預覽">
+  </div>
 
   <script>
     const API_BASE = 'https://collectionapi.metmuseum.org/public/collection/v1';
@@ -234,47 +225,97 @@
     const searchInput = document.getElementById('searchInput');
     const searchBtn = document.getElementById('searchBtn');
     const loadMoreBtn = document.getElementById('loadMoreBtn');
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightboxImg');
 
     function getDailySeed() {
       const today = new Date();
       return today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
     }
 
+    // 更豐富的中文背景介紹
     function makeChineseDesc(obj, isDaily = false) {
       const artist = obj.artistDisplayName || '未知藝術家';
       const title = obj.title || '這幅作品';
       const date = obj.objectDate || '';
-      const medium = obj.medium || '油畫';
+      const medium = obj.medium || '';
       const nationality = obj.artistNationality || '';
-      const dept = obj.department || '相關部門';
+      const dept = obj.department || '';
       const bio = obj.artistDisplayBio || '';
+      const culture = obj.culture || '';
+      const period = obj.period || '';
+      const credit = obj.creditLine || '';
 
-      let desc = '';
+      let parts = [];
+
       if (isDaily) {
-        desc += `今天為你推薦的是《${title}》。`;
+        parts.push(`今天為你推薦的是《${title}》。`);
       } else {
-        desc += `《${title}》`;
+        parts.push(`《${title}》`);
       }
 
+      // 藝術家與創作背景
       if (artist && artist !== '未知藝術家') {
-        desc += `這幅作品出自${nationality ? nationality + '藝術家' : ''}${artist}`;
-        if (date) desc += `，創作於 ${date}`;
-        desc += '。';
+        let artistPart = `這幅作品出自`;
+        if (nationality) artistPart += `${nationality}藝術家`;
+        artistPart += artist;
+        if (date) artistPart += `，創作於 ${date}`;
+        artistPart += '。';
+        parts.push(artistPart);
       }
 
-      if (medium.toLowerCase().includes('oil')) {
-        desc += `使用油畫媒材完成`;
-        if (dept) desc += `，目前收藏於大都會博物館「${dept}」`;
-        desc += '。';
-      } else if (dept) {
-        desc += `目前收藏於大都會博物館「${dept}」。`;
+      // 媒材與風格
+      if (medium) {
+        let mediumPart = `以${medium}完成`;
+        if (culture || period) {
+          mediumPart += `，屬於`;
+          if (period) mediumPart += period;
+          if (culture) mediumPart += (period ? '、' : '') + culture;
+          mediumPart += '時期的作品';
+        }
+        mediumPart += '。';
+        parts.push(mediumPart);
       }
 
-      if (bio && bio.length < 80) {
-        desc += ` ${bio}。`;
+      // 藝術家簡介
+      if (bio && bio.length > 5 && bio.length < 120) {
+        parts.push(`藝術家簡介：${bio}。`);
       }
-      return desc;
+
+      // 館藏
+      if (dept) {
+        parts.push(`目前收藏於大都會博物館的「${dept}」部門。`);
+      }
+
+      // 入藏資訊（若有）
+      if (credit && credit.length < 100) {
+        parts.push(`入藏資訊：${credit}。`);
+      }
+
+      return parts.join('');
     }
+
+    // 開啟放大預覽
+    function openLightbox(src) {
+      if (!src) return;
+      lightboxImg.src = src;
+      lightbox.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove('active');
+      document.body.style.overflow = '';
+      lightboxImg.src = '';
+    }
+
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox || e.target === lightboxClose) closeLightbox();
+    });
+    document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeLightbox();
+    });
 
     async function loadDailyPainting() {
       try {
@@ -295,9 +336,8 @@
 
         for (let i = 0; i < Math.min(25, ids.length); i++) {
           const tryIndex = (startIndex + i) % ids.length;
-          const tryId = ids[tryIndex];
           try {
-            const objRes = await fetch(`${API_BASE}/objects/${tryId}`);
+            const objRes = await fetch(`${API_BASE}/objects/${ids[tryIndex]}`);
             const candidate = await objRes.json();
             if (candidate && candidate.isPublicDomain && (candidate.primaryImageSmall || candidate.primaryImage)) {
               obj = candidate;
@@ -317,7 +357,7 @@
         dailySection.innerHTML = `
           <div class="daily-label">今日油畫 · ${new Date().toLocaleDateString('zh-TW')}</div>
           <div class="daily-card">
-            <img src="${imgSrc}" alt="${obj.title || ''}" onerror="this.src='${obj.primaryImageSmall || ''}'">
+            <img src="${imgSrc}" alt="${obj.title || ''}" data-full="${imgSrc}" class="zoomable">
             <div class="daily-info">
               <h2 class="daily-title">${obj.title || '無標題'}</h2>
               <p class="daily-artist">${obj.artistDisplayName || '未知藝術家'}</p>
@@ -329,6 +369,12 @@
             </div>
           </div>
         `;
+
+        // 綁定今日推薦圖片點擊
+        dailySection.querySelector('.zoomable')?.addEventListener('click', function() {
+          openLightbox(this.dataset.full || this.src);
+        });
+
       } catch (err) {
         console.error(err);
         dailySection.innerHTML = '<div class="error">今日推薦載入失敗，請稍後再試</div>';
@@ -382,8 +428,9 @@
       valid.forEach(obj => {
         const card = document.createElement('article');
         card.className = 'card';
+        const fullImg = obj.primaryImage || obj.primaryImageSmall;
         card.innerHTML = `
-          <img src="${obj.primaryImageSmall}" alt="${obj.title}" loading="lazy">
+          <img src="${obj.primaryImageSmall}" alt="${obj.title}" loading="lazy" data-full="${fullImg}" class="zoomable">
           <div class="card-body">
             <h3 class="card-title">${obj.title || '無標題'}</h3>
             <p class="card-artist">${obj.artistDisplayName || '未知藝術家'}</p>
@@ -392,6 +439,10 @@
           </div>
         `;
         gallery.appendChild(card);
+
+        card.querySelector('.zoomable').addEventListener('click', function() {
+          openLightbox(this.dataset.full || this.src);
+        });
       });
 
       currentIndex += PAGE_SIZE;
